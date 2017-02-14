@@ -59,10 +59,13 @@ def docopt_cmd(func):
 
 
 class Ticket (cmd.Cmd):
+
     intro = 'Welcome to Ticket booking service!' \
         + ' (type help for a list of commands.)'
+    print(__doc__)
     prompt = 'events>> '
     file = None
+
 
     @docopt_cmd
     def do_create(self, arg):
@@ -74,13 +77,16 @@ class Ticket (cmd.Cmd):
 
         event = functions.create_event(name, start, end, venue)
 
-        print("creates events")
+        print("created event")
 
     @docopt_cmd
     def do_delete(self, arg):
         """Usage: delete <event_id>"""
+        event = arg['<event_id>']
 
-        print("Deletes an event")
+        delete = functions.delete_event(event)
+
+        print("event deleted")
 
     @docopt_cmd
     def do_edit(self, arg):
@@ -91,8 +97,8 @@ class Ticket (cmd.Cmd):
     @docopt_cmd
     def do_list(self, arg):
         """Usage: list"""
-
-        print("lists the available events")
+        print("lists of thr available events")
+        events = functions.list()
 
     @docopt_cmd
     def do_view(self, arg):
@@ -119,7 +125,10 @@ class Ticket (cmd.Cmd):
 
         print('Thanks for booking')
         exit()
- #opt = docopt(__doc__, sys.argv[1:])
+
 if __name__ == '__main__':
-    Ticket().cmdloop()
-#print (opt)
+    try:
+        Ticket().cmdloop()
+    except KeyboardInterrupt:
+        print("\nApplication stopped")
+        exit()
