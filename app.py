@@ -9,7 +9,7 @@ Usage:
     event list
     event view <event_id>
     ticket generate <email>
-    ticket invalidate<ticket_id>
+    ticket invalidate <ticket_id>
     event (-i | --interactive)
     event (-h | --help)
 
@@ -66,6 +66,8 @@ class Ticket (cmd.Cmd):
     prompt = 'events>> '
     file = None
 
+    funt = functions.Functions()
+
 
     @docopt_cmd
     def do_create(self, arg):
@@ -75,48 +77,56 @@ class Ticket (cmd.Cmd):
         end = datetime.datetime.strptime (arg['<end_date>'], "%Y/%m/%d")
         venue = arg['<venue>']
 
-        event = functions.create_event(name, start, end, venue)
+        print (self.funt.create_event(name, start, end, venue))
 
-        print("created event")
 
     @docopt_cmd
     def do_delete(self, arg):
         """Usage: delete <event_id>"""
         event = arg['<event_id>']
 
-        delete = functions.delete_event(event)
+        delete = self.funt.delete_event(event)
 
         print("event deleted")
 
     @docopt_cmd
     def do_edit(self, arg):
-        """Usage: edit <event_id> <new_details>"""
+        """Usage: edit <event_id> <name> <start_date> <end_date> <venue> """
 
-        print("edits an event")
+        try:
+            id = arg['<event_id>']
+            name = arg['<name>']
+            start = datetime.datetime.strptime (arg['<start_date>'], "%Y/%m/%d") 
+            end = datetime.datetime.strptime (arg['<end_date>'], "%Y/%m/%d")
+            venue = arg['<venue>']
+
+            print(self.funt.update_event(id, name, start, end, venue))
+
+        except ValueError:
+            print("Invalid argument")
 
     @docopt_cmd
     def do_list(self, arg):
         """Usage: list"""
-        print("lists of thr available events")
-        events = functions.list()
+        print("lists of the available events")
+        events = self.funt.list()
 
     @docopt_cmd
     def do_view(self, arg):
         """Usage: view <event_id>"""
 
-        print("displays event specified")
+        print(self.funt.view_event(int(arg['<event_id>'])))
 
     @docopt_cmd
     def do_generate(self, arg):
         """Usage: generate <email>"""
-
-        print("generates a ticket and sends to email")
+        print(self.funt.generate_ticket(arg['<email>']))
 
     @docopt_cmd
     def do_invalidate(self, arg):
-        """Usage: ticket invalidate<ticket_id>"""
+        """Usage: invalidate <ticket_id>"""
 
-        print("Invalidates specified ticket")
+        print(self.funt.invalidate_ticket(int(arg['<ticket_id>'])))
 
 
 
