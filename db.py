@@ -30,5 +30,4 @@ class Tickets(base):
 	t_type = Column(String(255))
 	t_status = Column(String(255))
 
-
 base.metadata.create_all(engine)
