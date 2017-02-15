@@ -22,6 +22,13 @@ class Events(base):
 	end_date = Column(DateTime(), default=datetime.datetime.now)
 	venue = Column(String(255))
 
+class Tickets(base):
+	__tablename__ = 'tickets'
+
+	t_id = Column(Integer, primary_key=True)
+	event_name = Column(String(255))
+	t_type = Column(String(255))
+	t_status = Column(String(255))
 
 
 base.metadata.create_all(engine)
