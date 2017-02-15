@@ -1,4 +1,6 @@
-Ticket_booking_service
+** Ticket_booking_service **
+
+
 The application allows users to create events, delete events and view events. It also allows users to generate event tickets and invalidate tickets. Generated tickets are sent to user's email if uploaded
 
 
