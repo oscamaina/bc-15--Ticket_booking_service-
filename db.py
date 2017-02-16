@@ -18,8 +18,8 @@ class Events(base):
 
 	event_id = Column(Integer, primary_key=True)
 	name = Column(String(255), unique=True)
-	start_date = Column(DateTime(), default=datetime.datetime.now)
-	end_date = Column(DateTime(), default=datetime.datetime.now)
+	start_date = Column(DateTime())
+	end_date = Column(DateTime())
 	venue = Column(String(255))
 
 class Tickets(base):
