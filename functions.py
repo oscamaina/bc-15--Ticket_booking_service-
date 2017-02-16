@@ -5,6 +5,9 @@ from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import *
 from mail import sent_mail
+from tabulate import tabulate
+from termcolor import colored
+from sqlalchemy.orm.exc import UnmappedInstanceError
 
 class Functions():
 	base = declarative_base()
@@ -32,23 +35,26 @@ class Functions():
 		venue = venue
 
 		if name in self.events:
-			return "Event already exists: "
+			return colored ("Event already exists: ", 'red')
 		else:
 
 			new_event = Events(name=event_name,start_date=start_date, end_date=end_date,venue=venue)
 
 			self.session.add(new_event)
 			self.session.commit()
-			return "Created event " + new_event.name
+			return colored("Created event " + new_event.name + " successfully", 'green')
 
 	def delete_event(self, event_id):
 
 		""" Deletes event specified with event_id """
 
-		deleted = self.session.query(Events).filter_by(event_id=event_id).first()
-		self.session.delete(deleted)
-		self.session.commit()
-		return "deleted event"
+		try:
+			deleted = self.session.query(Events).filter_by(event_id=event_id).first()
+			self.session.delete(deleted)
+			self.session.commit()
+			return colored("Event successfully deleted", 'red')
+		except UnmappedInstanceError:
+			return colored("Event id doesn't exist", 'red')
 
 	def list(self):
 
@@ -56,8 +62,16 @@ class Functions():
 
 		evts = self.session.query(Events).all()
 		events_list = []
+		length = 0
 		for evt in evts:
-			print(evt.name + " " + str(evt.start_date) + " " + str(evt.end_date) + " " + evt.venue)
+			eventss = [evt.event_id,evt.name,evt.start_date,evt.end_date,evt.venue]
+			events_list.append(eventss)
+			length = len(events_list)
+		if length > 0:
+			print(colored(tabulate(events_list, headers=['Event id','Event Name', 'Start date', 'End date', 'Venue'],\
+					tablefmt='fancy_grid'), 'cyan'))
+		else:
+			print (colored("There are no available lists", "red"))
 
 	def view_event(self, event_id):
 
@@ -71,10 +85,10 @@ class Functions():
 			for ticket in stmt:
 				output += (str(ticket.t_id) + ",")
 			if output == "":
-				return "No tickets for this event"
+				return colored("No available tickets for this event", 'red')
 
 			return output
-		return "Event not found"
+		return colored("Event not found", 'red')
 
 	def update_event(self, event_id, name, start_date, end_date, venue):
 
@@ -84,7 +98,7 @@ class Functions():
 		({'name': name, 'start_date': start_date, 'end_date': end_date, 'venue': venue})
 		self.session.execute(updated)
 		self.session.commit()
-		return "updated event "
+		return colored("successfully updated " + name + " event", 'green')
 
 	def generate_ticket(self, email):
 
@@ -108,7 +122,7 @@ class Functions():
 				return sent_mail(email,ticket_id)
 
 		else:
-			return "Event doesn't exist"
+			return colored("Event doesn't exist", 'red')
 
 	def invalidate_ticket(self, t_id):
 
@@ -117,4 +131,4 @@ class Functions():
 		statement = update(Tickets).where(Tickets.t_id == t_id).values({'t_status': 'Invalid'})
 		self.session.execute(statement)
 		self.session.commit()
-		return "Ticket number " + str(t_id) + " is now invalidated"
+		return colored("Ticket number " + str(t_id) + " is now invalidated", 'red')
