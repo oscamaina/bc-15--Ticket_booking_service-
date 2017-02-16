@@ -13,8 +13,8 @@ class Functions():
 
 	Session = sessionmaker(bind=engine)
 	session = Session()
+	
 	events = []
-
 
 	
 	stmt = session.query(Events)
@@ -23,6 +23,9 @@ class Functions():
 		events.append(evens.name)
 
 	def create_event(self, name, start, end, venue):
+
+		""" Creates new event """
+
 		event_name = name
 		start_date = start 
 		end_date = end
@@ -36,21 +39,30 @@ class Functions():
 
 			self.session.add(new_event)
 			self.session.commit()
-			return "Created event"
+			return "Created event " + new_event.name
 
 	def delete_event(self, event_id):
+
+		""" Deletes event specified with event_id """
+
 		deleted = self.session.query(Events).filter_by(event_id=event_id).first()
 		self.session.delete(deleted)
 		self.session.commit()
 		return "deleted event"
 
 	def list(self):
+
+		""" Lists all the events in the database """
+
 		evts = self.session.query(Events).all()
 		events_list = []
 		for evt in evts:
-			print(evt.name + str(evt.start_date) + str(evt.end_date) + evt.venue)
+			print(evt.name + " " + str(evt.start_date) + " " + str(evt.end_date) + " " + evt.venue)
 
 	def view_event(self, event_id):
+
+		""" Lists all tickets for event of event_id """
+
 		output = ""
 		statement = self.session.query(Events).filter_by(event_id=event_id).first()
 		if statement:
@@ -65,13 +77,19 @@ class Functions():
 		return "Event not found"
 
 	def update_event(self, event_id, name, start_date, end_date, venue):
+
+		""" Edits an already existing event in the database """
+
 		updated = update(Events).where(Events.event_id == event_id).values\
 		({'name': name, 'start_date': start_date, 'end_date': end_date, 'venue': venue})
 		self.session.execute(updated)
 		self.session.commit()
-		return "updated event"
+		return "updated event "
 
 	def generate_ticket(self, email):
+
+		""" Generates ticket and sent to specified email """
+
 		event_name = input("Enter event name:")
 		if event_name in self.events:
 			ticket_type = input("Enter V for VIP ticket or R for Regular:")
@@ -93,6 +111,9 @@ class Functions():
 			return "Event doesn't exist"
 
 	def invalidate_ticket(self, t_id):
+
+		""" Invalidates a ticket """
+		
 		statement = update(Tickets).where(Tickets.t_id == t_id).values({'t_status': 'Invalid'})
 		self.session.execute(statement)
 		self.session.commit()
