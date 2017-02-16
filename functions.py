@@ -39,7 +39,7 @@ class Functions():
 		else:
 
 			new_event = Events(name=event_name,start_date=start_date, end_date=end_date,venue=venue)
-
+			self.events.append(event_name)
 			self.session.add(new_event)
 			self.session.commit()
 			return colored("Created event " + new_event.name + " successfully", 'green')
