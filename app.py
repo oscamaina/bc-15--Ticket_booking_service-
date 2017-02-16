@@ -21,11 +21,20 @@ Options:
 import sys
 import datetime
 import cmd
+import smtplib
 from docopt import docopt, DocoptExit
 import functions
 import db
+from colorama import init
+from pyfiglet import Figlet
+from termcolor import *
 
 
+init()
+font = Figlet(font='ogre')
+introd = font.renderText('Book Ticket')
+os.system('cls')
+cprint(introd,"green", attrs=['blink'])
 
 def docopt_cmd(func):
     """
@@ -84,10 +93,7 @@ class Ticket (cmd.Cmd):
     def do_delete(self, arg):
         """Usage: delete <event_id>"""
         event = arg['<event_id>']
-
         delete = self.funt.delete_event(event)
-
-        print("event deleted")
 
     @docopt_cmd
     def do_edit(self, arg):
@@ -120,7 +126,11 @@ class Ticket (cmd.Cmd):
     @docopt_cmd
     def do_generate(self, arg):
         """Usage: generate <email>"""
-        print(self.funt.generate_ticket(arg['<email>']))
+        try:
+            print(self.funt.generate_ticket(arg['<email>']))
+        except smtplib.SMTPException:
+            print ("Error: unable to send email")
+
 
     @docopt_cmd
     def do_invalidate(self, arg):
