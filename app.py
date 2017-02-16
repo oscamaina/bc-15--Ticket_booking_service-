@@ -3,7 +3,7 @@
 This example uses docopt with the built in cmd module to demonstrate an
 interactive command application.
 Usage:
-    event create <name> <start_date> <end_date> <venue>
+    event create <name> <start_date-yyyy/mm/dd> <end_date-yyyy/mm/dd> <venue>
     event delete <event_id>
     event edit <event_id> <new_details>
     event list
@@ -28,6 +28,7 @@ import db
 from colorama import init
 from pyfiglet import Figlet
 from termcolor import *
+from tabulate import tabulate
 
 
 init()
@@ -80,41 +81,42 @@ class Ticket (cmd.Cmd):
 
     @docopt_cmd
     def do_create(self, arg):
-        """Usage: create <name> <start_date> <end_date> <venue>"""
-        name = arg['<name>']
-        start = datetime.datetime.strptime (arg['<start_date>'], "%Y/%m/%d") 
-        end = datetime.datetime.strptime (arg['<end_date>'], "%Y/%m/%d")
-        venue = arg['<venue>']
-
-        print (self.funt.create_event(name, start, end, venue))
+        """Usage: create <name> <start_date-yyyy/mm/dd> <end_date-yyyy/mm/dd> <venue>"""
+        try:
+            name = arg['<name>']
+            start = datetime.datetime.strptime (arg['<start_date-yyyy/mm/dd>'], "%Y/%m/%d") 
+            end = datetime.datetime.strptime (arg['<end_date-yyyy/mm/dd>'], "%Y/%m/%d")
+            venue = arg['<venue>']
+            print (self.funt.create_event(name, start, end, venue))
+        except ValueError:
+            print(colored("Invalid input" ,'red'))
 
 
     @docopt_cmd
     def do_delete(self, arg):
         """Usage: delete <event_id>"""
         event = arg['<event_id>']
-        delete = self.funt.delete_event(event)
+        print(self.funt.delete_event(event))            
 
     @docopt_cmd
     def do_edit(self, arg):
-        """Usage: edit <event_id> <name> <start_date> <end_date> <venue> """
+        """Usage: edit <event_id> <name> <start_date-yyyy/mm/dd> <end_date-yyyy/mm/dd> <venue> """
 
         try:
             id = arg['<event_id>']
             name = arg['<name>']
-            start = datetime.datetime.strptime (arg['<start_date>'], "%Y/%m/%d") 
-            end = datetime.datetime.strptime (arg['<end_date>'], "%Y/%m/%d")
+            start = datetime.datetime.strptime (arg['<start_date-yyyy/mm/dd>'], "%Y/%m/%d") 
+            end = datetime.datetime.strptime (arg['<end_date-yyyy/mm/dd>'], "%Y/%m/%d")
             venue = arg['<venue>']
 
             print(self.funt.update_event(id, name, start, end, venue))
 
         except ValueError:
-            print("Invalid argument")
+            print(colored("Invalid argument", 'red'))
 
     @docopt_cmd
     def do_list(self, arg):
         """Usage: list"""
-        print("lists of the available events")
         events = self.funt.list()
 
     @docopt_cmd
@@ -129,7 +131,7 @@ class Ticket (cmd.Cmd):
         try:
             print(self.funt.generate_ticket(arg['<email>']))
         except smtplib.SMTPException:
-            print ("Error: unable to send email")
+            print (colored("Error: unable to send email, Invalid email address",'red'))
 
 
     @docopt_cmd
@@ -143,7 +145,7 @@ class Ticket (cmd.Cmd):
     def do_quit(self, arg):
         """Quits out of Interactive Mode."""
 
-        print('Thanks for booking')
+        print (colored('Thanks for booking, feel free to book with us anytime', 'green'))
         exit()
 
 if __name__ == '__main__':
