@@ -1,4 +1,5 @@
 import smtplib
+from termcolor import colored
 
 def sent_mail(to, ticket_num):
 	content = 'Your ticket has been generated, ticket number is ' + str(ticket_num)
@@ -11,4 +12,4 @@ def sent_mail(to, ticket_num):
 
 	mail.close()
 
-	return "mail sent succesfully"
+	return colored("mail sent succesfully", 'green')
