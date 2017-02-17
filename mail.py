@@ -7,8 +7,8 @@ def sent_mail(to, ticket_num):
 
 	mail.ehlo()
 	mail.starttls()
-	mail.login('mainaoscar40@gmail.com', 'maina6484')
-	mail.sendmail('mainaoscar40@gmail.com',to,content)
+	mail.login('email', 'password')
+	mail.sendmail('email',to,content)
 
 	mail.close()
 
